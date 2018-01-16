@@ -71,7 +71,7 @@ set(exportTarget "${CMAKE_PROJECT_NAME}-targets")
 set(cmakeFilesInstallDir "cmake")
 set(configFile "${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}-config.cmake")
 set(exportFileConfig "${cmakeFilesInstallDir}/${exportTarget}.cmake")
-set(INCLUDE_INSTALL_DIR include)
+set(INCLUDE_INSTALL_DIR include/modbus)
 get_target_property(LIB_NAMES ${TARGET} OUTPUT_NAME)
 
 install(TARGETS ${TARGET}

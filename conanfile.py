@@ -7,10 +7,11 @@ class LibmodbusConan(ConanFile):
     license = "LGPL-2.1"
     url = "https://github.com/joakimono/conan-libmodbus"
     homepage = "http://libmodbus.org"
+    author = "Joakim Haugen (joakim.haugen@gmail.com)"
     description = "libmodbus is a free software library to send/receive data with a device which respects the Modbus protocol."
     settings = "os", "compiler", "build_type", "arch", "os_build", "arch_build"
     options = {"shared": [True, False]}
-    default_options = "shared=False"
+    default_options = "shared=True"
     generators = "cmake"
     exports_sources = "extra/*" , "CMakeLists.txt"
 
@@ -36,24 +37,21 @@ class LibmodbusConan(ConanFile):
             cmake.build()
             cmake.install()
         else:
-            # need to run autoreconf first (run autogen.sh)?
+            if self.options.shared:
+                shared_static = "--enable-host-shared --prefix "
+            else:
+                shared_static = "--enable-static --disable-shared --prefix "
             env_build = AutoToolsBuildEnvironment(self)
-            # env_build.fpic = True
-            env_build.configure(configure_dir="libmodbus") 
-            env_build.make()
+            env_build.fpic = True
             with tools.environment_append(env_build.vars):
-                self.run("make install")
-        # --enable-host-shared 
+                self.run("cd libmodbus && ./autogen.sh")
+                self.run("cd libmodbus && ./configure {}{}".format(shared_static, self.package_folder))
+                self.run("cd libmodbus && make")
+                self.run("cd libmodbus && make install") 
 
     def package(self):
         self.copy("COPYING.LESSER", dst="licenses", src="libmodbus",
                   ignore_case=True, keep_path=False)
-        #self.copy("*.h", dst="include", src="hello")
-        #self.copy("*hello.lib", dst="lib", keep_path=False)
-        #self.copy("*.dll", dst="bin", keep_path=False)
-        #self.copy("*.so", dst="lib", keep_path=False)
-        #self.copy("*.dylib", dst="lib", keep_path=False)
-        #self.copy("*.a", dst="lib", keep_path=False)
 
     def package_info(self):
         if self.settings.os == "Windows":
@@ -61,10 +59,11 @@ class LibmodbusConan(ConanFile):
                 self.cpp_info.libs = ["modbus"]
             else:
                 self.cpp_info.libs = ["libmodbus"]
+            if self.settings.build_type == "Debug":
+                self.cpp_info.libs[0] += '_d'
         else:
             self.cpp_info.libs = ["modbus"]
-        if self.settings.build_type == "Debug":
-            self.cpp_info.libs[0] += '_d'
+        self.cpp_info.includedirs =["include/modbus"]
 
     def configure(self):
         del self.settings.compiler.libcxx

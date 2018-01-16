@@ -1,7 +1,7 @@
 
 env:
    global:
-     - CONAN_REFERENCE: "libmodbus/3.1.4"
+     - CONAN_REFERENCE: "libmodbus/3.1.4p1"
      - CONAN_USERNAME: "joakimono"
      - CONAN_LOGIN_USERNAME: "joakimono"
      - CONAN_CHANNEL: "testing"
