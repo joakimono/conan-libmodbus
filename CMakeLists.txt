@@ -41,15 +41,15 @@ set(CURRENT_SRC
 set(LIB_PREFIX "lib")
 
 if(BUILD_SHARED_LIBS)
-  add_definitions(-DDLLBUILD)
   add_library(${TARGET} SHARED ${CURRENT_SRC} ${CURRENT_PUBLIC_HEADERS})
+  target_compile_definitions(${TARGET} PRIVATE DLLBUILD)
   message(STATUS "${TARGET}: building SHARED library")
   if(WIN32)
     set(LIB_PREFIX "")
   endif()
 else()
-  add_definitions(-DSTATICBUILD)
   add_library(${TARGET} STATIC ${CURRENT_SRC} ${CURRENT_PUBLIC_HEADERS})
+  target_compile_definitions(${TARGET} PUBLIC LIBMODBUS_STATICBUILD)
   message(STATUS "${TARGET}: building STATIC library")
 endif()
 
