@@ -58,7 +58,8 @@ class LibmodbusConan(ConanFile):
             if self.options.shared == True:
                 self.cpp_info.libs = ["modbus"]
             else:
-                self.cpp_info.libs = ["libmodbus"]
+                self.cpp_info.libs = ["libmodbus", "ws2_32"]
+                self.cpp_info.defines = ["LIBMODBUS_STATICBUILD"]
             if self.settings.build_type == "Debug":
                 self.cpp_info.libs[0] += '_d'
         else:
