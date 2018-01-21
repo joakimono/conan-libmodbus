@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 from conans import ConanFile, CMake, AutoToolsBuildEnvironment, tools
 import shutil
 
@@ -9,31 +12,33 @@ class LibmodbusConan(ConanFile):
     homepage = "http://libmodbus.org"
     author = "Joakim Haugen (joakim.haugen@gmail.com)"
     description = "libmodbus is a free software library to send/receive data with a device which respects the Modbus protocol."
-    settings = "os", "compiler", "build_type", "arch", "os_build", "arch_build"
+    settings = "os", "compiler", "build_type", "arch"
     options = {"shared": [True, False]}
     default_options = "shared=True"
     generators = "cmake"
-    exports_sources = "extra/*" , "CMakeLists.txt"
+    exports_sources = ["extra/*" , "CMakeLists.txt"]
+    source_subfolder = "libmodbus"
+    build_subfolder = "build_subfolder"
 
     def source(self):
     
         # Using a patched 3.1.4p1, which is similar to 3.1.4, but with some more commits (bug fixes.)
         #self.run("git clone --depth 1 -b v{0} https://github.com/stephane/libmodbus.git".format(self.version))
         self.run("git clone https://github.com/stephane/libmodbus.git")
-        self.run("cd libmodbus && git checkout df7d633fd98a1cfaf698d41af50ddd095e64d053") 
+        self.run("cd {} && git checkout df7d633fd98a1cfaf698d41af50ddd095e64d053".format(self.source_subfolder)) 
         
     def build(self):
-        if self.settings.os == "Windows":
+        if self.settings.compiler == "Visual Studio":
             shutil.move(self.source_folder + "/CMakeLists.txt", 
-                        self.source_folder + "/libmodbus/CMakeLists.txt")
+                        self.source_folder + "/{}/CMakeLists.txt".format(self.source_subfolder))
             shutil.move(self.source_folder + "/extra/win_config.h", 
-                        self.source_folder + "/libmodbus/config.h")
+                        self.source_folder + "/{}/config.h".format(self.source_subfolder))
             shutil.move(self.source_folder + "/extra/project-config.cmake.in",
-                        self.source_folder + "/libmodbus/project-config.cmake.in")
+                        self.source_folder + "/{}/project-config.cmake.in".format(self.source_subfolder))
             tools.patch(patch_file = self.source_folder + "/extra/modbus.patch", 
-                        base_path="libmodbus")
+                        base_path=self.source_subfolder)
             cmake = CMake(self)
-            cmake.configure(source_folder=self.source_folder + "/libmodbus")
+            cmake.configure(source_folder=self.source_subfolder, build_folder = self.build_subfolder)
             cmake.build()
             cmake.install()
         else:
@@ -44,17 +49,19 @@ class LibmodbusConan(ConanFile):
             env_build = AutoToolsBuildEnvironment(self)
             env_build.fpic = True
             with tools.environment_append(env_build.vars):
-                self.run("cd libmodbus && ./autogen.sh")
-                self.run("cd libmodbus && ./configure {}{}".format(shared_static, self.package_folder))
-                self.run("cd libmodbus && make")
-                self.run("cd libmodbus && make install") 
+                self.run("cd {} && ./autogen.sh".format(self.source_subfolder))
+                self.run("cd {} && ./configure {}{}".format(self.source_subfolder,
+                                                            shared_static,
+                                                            self.package_folder))
+                self.run("cd {} && make".format(self.source_subfolder))
+                self.run("cd {} && make install".format(self.source_subfolder)) 
 
     def package(self):
-        self.copy("COPYING.LESSER", dst="licenses", src="libmodbus",
+        self.copy("COPYING.LESSER", dst="licenses", src=self.source_subfolder,
                   ignore_case=True, keep_path=False)
 
     def package_info(self):
-        if self.settings.os == "Windows":
+        if self.settings.compiler == "Visual Studio":
             if self.options.shared == True:
                 self.cpp_info.libs = ["modbus"]
             else:

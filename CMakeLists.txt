@@ -15,7 +15,7 @@ endif()
 configure_file(${CMAKE_SOURCE_DIR}/src/modbus-version.h.in
 ${CMAKE_SOURCE_DIR}/src/modbus-version.h)
 
-include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+include(${CMAKE_BINARY_DIR}/../conanbuildinfo.cmake)
 conan_basic_setup()
 include (CMakePackageConfigHelpers)
 

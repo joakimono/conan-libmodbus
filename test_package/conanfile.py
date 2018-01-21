@@ -1,8 +1,11 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 from conans import ConanFile, CMake, tools
 import os
 
 class LibmodbusTestConan(ConanFile):
-    settings = "os", "compiler", "build_type", "arch", "os_build", "arch_build"
+    settings = "os", "compiler", "build_type", "arch"
     generators = "cmake"
 
     def build(self):
@@ -11,6 +14,7 @@ class LibmodbusTestConan(ConanFile):
         cmake.build()
 
     def imports(self):
+        self.copy("*.lib" ,dst="lib", src="lib")
         self.copy("*.dll", dst="bin", src="bin")
         self.copy("*.dylib*", dst="bin", src="lib")
         self.copy('*.so*', dst='bin', src='lib')
