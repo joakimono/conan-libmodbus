@@ -1,7 +1,7 @@
 #include <cstdlib>
 #include <iostream>
 
-#include "modbus.h"
+#include "modbus/modbus.h"
 
 int main() {
   
