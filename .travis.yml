@@ -23,7 +23,7 @@ matrix:
    include:
 
       - <<: *linux
-        env: CONAN_GCC_VERSIONS=8 CONAN_DOCKER_IMAGE=conanio/gcc8-armv7hf
+        env: CONAN_ARCHS=armv7 CONAN_GCC_VERSIONS=8 CONAN_DOCKER_IMAGE=conanio/gcc8-armv7hf
 
       - <<: *linux
         env: CONAN_GCC_VERSIONS=5 CONAN_DOCKER_IMAGE=conanio/gcc5
