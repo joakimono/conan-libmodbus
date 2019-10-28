@@ -45,13 +45,19 @@ class LibmodbusConan(ConanFile):
                 shared_static = "--enable-host-shared --prefix "
             else:
                 shared_static = "--enable-static --disable-shared --prefix "
+
+            if self.settings.arch != "amd64":
+                cross_host = "--host={} ".format(self.settings.arch)
+            else:
+                cross_host = ""
             env_build = AutoToolsBuildEnvironment(self)
             env_build.fpic = True
             with tools.environment_append(env_build.vars):
                 self.run("cd {} && ./autogen.sh".format(self.source_subfolder))
-                self.run("cd {} && ./configure {}{}".format(self.source_subfolder,
-                                                            shared_static,
-                                                            self.package_folder))
+                self.run("cd {} && ./configure {}{}{}".format(self.source_subfolder,
+                                                              cross_host,
+                                                              shared_static,
+                                                              self.package_folder))
                 self.run("cd {} && make".format(self.source_subfolder))
                 self.run("cd {} && make install".format(self.source_subfolder))
 
