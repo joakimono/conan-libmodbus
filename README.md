@@ -22,7 +22,7 @@ The package is usually consumed using the `conan install` command or a *conanfil
 
    ```
    [requires]
-   libmodbus/[>=3.1.4p1]@joakimono/stable
+   libmodbus/[>=3.1.6]@joakimono/stable
 
    [options]
    libmodbus:shared=False

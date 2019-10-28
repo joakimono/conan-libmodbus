@@ -6,7 +6,7 @@ import shutil
 
 class LibmodbusConan(ConanFile):
     name = "libmodbus"
-    version = "3.1.4p1"
+    version = "3.1.6"
     license = "LGPL-2.1"
     url = "https://github.com/joakimono/conan-libmodbus"
     homepage = "http://libmodbus.org"
@@ -21,21 +21,20 @@ class LibmodbusConan(ConanFile):
     build_subfolder = "build_subfolder"
 
     def source(self):
-    
-        # Using a patched 3.1.4p1, which is similar to 3.1.4, but with some more commits (bug fixes.)
-        #self.run("git clone --depth 1 -b v{0} https://github.com/stephane/libmodbus.git".format(self.version))
-        self.run("git clone https://github.com/stephane/libmodbus.git")
-        self.run("cd {} && git checkout df7d633fd98a1cfaf698d41af50ddd095e64d053".format(self.source_subfolder)) 
-        
+
+        self.run("git clone --depth 1 -b v{0} https://github.com/stephane/libmodbus.git".format(self.version))
+        #self.run("git clone https://github.com/stephane/libmodbus.git")
+        #self.run("cd {} && git checkout df7d633fd98a1cfaf698d41af50ddd095e64d053".format(self.source_subfolder))
+
     def build(self):
         if self.settings.compiler == "Visual Studio":
-            shutil.move(self.source_folder + "/CMakeLists.txt", 
+            shutil.move(self.source_folder + "/CMakeLists.txt",
                         self.source_folder + "/{}/CMakeLists.txt".format(self.source_subfolder))
-            shutil.move(self.source_folder + "/extra/win_config.h", 
+            shutil.move(self.source_folder + "/extra/win_config.h",
                         self.source_folder + "/{}/config.h".format(self.source_subfolder))
             shutil.move(self.source_folder + "/extra/project-config.cmake.in",
                         self.source_folder + "/{}/project-config.cmake.in".format(self.source_subfolder))
-            tools.patch(patch_file = self.source_folder + "/extra/modbus.patch", 
+            tools.patch(patch_file = self.source_folder + "/extra/modbus.patch",
                         base_path=self.source_subfolder)
             cmake = CMake(self)
             cmake.configure(source_folder=self.source_subfolder, build_folder = self.build_subfolder)
@@ -54,7 +53,7 @@ class LibmodbusConan(ConanFile):
                                                             shared_static,
                                                             self.package_folder))
                 self.run("cd {} && make".format(self.source_subfolder))
-                self.run("cd {} && make install".format(self.source_subfolder)) 
+                self.run("cd {} && make install".format(self.source_subfolder))
 
     def package(self):
         self.copy("COPYING.LESSER", dst="licenses", src=self.source_subfolder,
