@@ -46,7 +46,8 @@ class LibmodbusConan(ConanFile):
             else:
                 shared_static = "--enable-static --disable-shared --prefix "
 
-            if self.settings.arch != "amd64":
+            # Assumes that x86 is the host os and building for e.g. armv7
+            if self.settings.arch != "x86_64" or self.settings.arch != "x86":
                 cross_host = "--host={} ".format(self.settings.arch)
             else:
                 cross_host = ""
