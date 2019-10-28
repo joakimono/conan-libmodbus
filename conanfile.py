@@ -71,7 +71,7 @@ class LibmodbusConan(ConanFile):
                 self.cpp_info.libs[0] += '_d'
         else:
             self.cpp_info.libs = ["modbus"]
-        self.cpp_info.includedirs =["include/modbus"]
+        self.cpp_info.includedirs = ["include"]
 
     def configure(self):
         del self.settings.compiler.libcxx
