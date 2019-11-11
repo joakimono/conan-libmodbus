@@ -48,7 +48,7 @@ class LibmodbusConan(ConanFile):
 
             # Assumes that x86 is the host os and building for e.g. armv7
             if self.settings.arch != "x86_64" or self.settings.arch != "x86":
-                cross_host = "--host={arch}-none-{os} ".format(arch = self.settings.arch, os = self.settings.os.lower())
+                cross_host = "--host={arch}-none-{os} ".format(arch = self.settings.arch, os = str(self.settings.os).lower())
             else:
                 cross_host = ""
             env_build = AutoToolsBuildEnvironment(self)
